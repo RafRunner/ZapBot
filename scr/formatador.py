@@ -35,12 +35,15 @@ def formatar_numero_goiania_brasil(numero):
 
 
 def parse_verdadeiro_falso(valor):
-    valor_tratado = valor.lower()
+    if isinstance(valor, (bool, int)):
+        return bool(valor)
 
-    if valor_tratado == 'sim' or valor_tratado == 's' or valor_tratado == 'verdadeiro' or valor_tratado == 'v' or valor_tratado == 'true' or valor_tratado == 't':
+    valor_tratado = valor.lower().strip()
+
+    if valor_tratado == 'sim' or valor_tratado == 's' or valor_tratado == 'verdadeiro' or valor_tratado == 'v' or valor_tratado == 'true' or valor_tratado == 't' or valor_tratado == '1':
         return True
 
-    if valor_tratado == 'nao' or valor_tratado == 'não' or valor_tratado == 'n' or valor_tratado == 'falso' or valor_tratado == 'f' or valor_tratado == 'false':
+    if valor_tratado == 'nao' or valor_tratado == 'não' or valor_tratado == 'n' or valor_tratado == 'falso' or valor_tratado == 'f' or valor_tratado == 'false' or valor_tratado == '0':
         return False
 
     return bool(valor_tratado)

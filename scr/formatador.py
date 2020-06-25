@@ -49,14 +49,14 @@ def parse_verdadeiro_falso(valor):
     return bool(valor_tratado)
 
 
-def formatar_mensagens(mensagens, pessoa, infos_adicionais=None):
+def formatar_mensagens(mensagens, pessoa):
     mensagens_formatadas = []
 
     for mensagem in mensagens:
         mensagem_formatada = re.subn(r'%nome', pessoa.primeiro_nome, mensagem)[0]
 
-        if infos_adicionais is not None:
-            for info in infos_adicionais:
+        if pessoa.infos_adicionais is not None:
+            for info in pessoa.infos_adicionais:
                 mensagem_formatada = re.subn('%' + info.nome_coluna, info.substituicao_efetiva, mensagem_formatada)[0]
 
         mensagens_formatadas.append(mensagem_formatada)

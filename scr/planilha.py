@@ -10,30 +10,30 @@ def trata_coluna(nome_coluna):
     return ord(nome_coluna.lower()) - 96
 
 
-def normaliza_tamanho_colunas(nomes, numeros, checks):
+def normaliza_tamanho_colunas(nomes, numeros, enviados):
     while len(numeros) < len(nomes):
         numeros.append('')
-    while len(checks) < len(nomes):
-        checks.append(False)
+    while len(enviados) < len(nomes):
+        enviados.append(False)
 
 
 class Planilha:
 
-    def __init__(self, nome_planilha, numero_sheet, linha_inicial, linha_final, coluna_nomes, coluna_numeros, coluna_check, infos_adicionais=None, inverter_check=False):
+    def __init__(self, nome_planilha, numero_sheet, linha_inicial, linha_final, coluna_nomes, coluna_numeros, coluna_enviado, infos_adicionais=None, funcao_deve_enviar=None):
         scope = ['https://www.googleapis.com/auth/drive']
         creds = ServiceAccountCredentials.from_json_keyfile_name("credenciais.json", scope)
         client = gspread.authorize(creds)
 
-        self.planilha = client.open(nome_planilha)
-        self.sheet = self.planilha.worksheets()[numero_sheet]
+        planilha = client.open(nome_planilha)
+        self.sheet = planilha.worksheets()[numero_sheet]
 
         self.linha_inicial = linha_inicial - 1
         self.linha_final = linha_final
         self.coluna_nomes = trata_coluna(coluna_nomes)
         self.coluna_numeros = trata_coluna(coluna_numeros)
-        self.coluna_check = trata_coluna(coluna_check)
+        self.coluna_enviado = trata_coluna(coluna_enviado)
         self.infos_adicionais = infos_adicionais
-        self.inverter_check = inverter_check
+        self.funcao_deve_enviar = funcao_deve_enviar
 
     def get_valores_coluna(self, coluna):
         return self.sheet.col_values(coluna)[self.linha_inicial:self.linha_final]
@@ -47,25 +47,25 @@ class Planilha:
             info.valor = self.get_valores_coluna(info.coluna)
             info.deve_substituir = list(map(formatador.parse_verdadeiro_falso, info.valor))
 
-            if info.inverter_check:
-                for i in range(0, len(info.deve_substituir)):
-                    info.deve_substituir[i] = not info.deve_substituir[i]
-
     def __get_informacoes_adicionais_especificas(self, indice):
-        infos = []
+        infos_especificas = []
         for info in self.infos_adicionais:
-            infos.append(InformacaoAdicionalEspecifica(info, indice, self.infos_adicionais))
-        return infos
+            infos_especificas.append(InformacaoAdicionalEspecifica(info, indice))
 
-    def get_informacoes(self):
-        info = []
+        for info_especifica in infos_especificas:
+            info_especifica.todas_informacoes_especificas = infos_especificas
+
+        return infos_especificas
+
+    def get_pessoas(self):
+        pessoas = []
         invalidos = []
 
         nomes = self.get_valores_coluna(self.coluna_nomes)
         numeros = self.get_valores_coluna(self.coluna_numeros)
-        checks = self.get_valores_coluna(self.coluna_check)
+        enviados = self.get_valores_coluna(self.coluna_enviado)
 
-        normaliza_tamanho_colunas(nomes, numeros, checks)
+        normaliza_tamanho_colunas(nomes, numeros, enviados)
 
         numeros_tratados = []
         for numero in numeros:
@@ -78,21 +78,23 @@ class Planilha:
                 numeros_tratados.append(numero)
                 invalidos.append(True)
 
-        checks_booleanos = list(map(formatador.parse_verdadeiro_falso, checks))
-        if self.inverter_check:
-            for i in range(0, len(checks_booleanos)):
-                checks_booleanos[i] = not checks_booleanos[i]
+        enviados_booleanos = list(map(formatador.parse_verdadeiro_falso, enviados))
 
         self.__carrega_informacoes_adicionais()
 
         for i in range(0, len(nomes)):
-            info_adicional_especifica = self.__get_informacoes_adicionais_especificas(i)
-            pessoa = Pessoa(self.linha_inicial + i + 1, nomes[i], numeros_tratados[i], checks_booleanos[i], invalidos[i], info_adicional_especifica)
-            info.append(pessoa)
+            infos_adicionais_especificas = self.__get_informacoes_adicionais_especificas(i)
 
-        return info
+            deve_enviar = not enviados_booleanos[i]
+            if deve_enviar and self.funcao_deve_enviar is not None:
+                deve_enviar = self.funcao_deve_enviar(infos_adicionais_especificas)
 
-    def check_pessoa(self, pessoa):
+            pessoa = Pessoa(self.linha_inicial + i + 1, nomes[i], numeros_tratados[i], deve_enviar, invalidos[i], infos_adicionais_especificas)
+            pessoas.append(pessoa)
+
+        return pessoas
+
+    def marca_como_enviado(self, pessoa):
         linha = pessoa.linha
-        self.sheet.update_cell(linha, self.coluna_check, 'True')
+        self.sheet.update_cell(linha, self.coluna_enviado, 'True')
 

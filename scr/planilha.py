@@ -19,7 +19,9 @@ def normaliza_tamanho_colunas(nomes, numeros, enviados):
 
 class Planilha:
 
-    def __init__(self, nome_planilha, numero_sheet, linha_inicial, linha_final, coluna_nomes, coluna_numeros, coluna_enviado, infos_adicionais=None, funcao_deve_enviar=None):
+    def __init__(self, nome_planilha, numero_sheet, linha_inicial, linha_final, coluna_nomes, coluna_numeros,
+                 coluna_enviado, infos_adicionais=None, funcao_deve_enviar=None):
+
         scope = ['https://www.googleapis.com/auth/drive']
         creds = ServiceAccountCredentials.from_json_keyfile_name("credenciais.json", scope)
         client = gspread.authorize(creds)
@@ -87,9 +89,10 @@ class Planilha:
 
             deve_enviar = not enviados_booleanos[i]
             if deve_enviar and self.funcao_deve_enviar is not None:
-                deve_enviar = self.funcao_deve_enviar(infos_adicionais_especificas)
+                deve_enviar = self.funcao_deve_enviar(infos_adicionais_especificas[0])
 
-            pessoa = Pessoa(self.linha_inicial + i + 1, nomes[i], numeros_tratados[i], deve_enviar, invalidos[i], infos_adicionais_especificas)
+            pessoa = Pessoa(self.linha_inicial + i + 1, nomes[i], numeros_tratados[i], deve_enviar, invalidos[i],
+                            infos_adicionais_especificas)
             pessoas.append(pessoa)
 
         return pessoas

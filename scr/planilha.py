@@ -46,8 +46,8 @@ class Planilha:
             return
 
         for info in self.infos_adicionais:
-            info.valor = self.get_valores_coluna(info.coluna)
-            info.deve_substituir = list(map(formatador.parse_verdadeiro_falso, info.valor))
+            info.valores = self.get_valores_coluna(info.coluna)
+            info.devem_substituir = list(map(formatador.parse_verdadeiro_falso, info.valores))
 
     def __get_informacoes_adicionais_especificas(self, indice):
         infos_especificas = []
@@ -88,11 +88,13 @@ class Planilha:
             infos_adicionais_especificas = self.__get_informacoes_adicionais_especificas(i)
 
             deve_enviar = not enviados_booleanos[i]
-            if deve_enviar and self.funcao_deve_enviar is not None:
-                deve_enviar = self.funcao_deve_enviar(infos_adicionais_especificas[0])
 
             pessoa = Pessoa(self.linha_inicial + i + 1, nomes[i], numeros_tratados[i], deve_enviar, invalidos[i],
                             infos_adicionais_especificas)
+
+            if deve_enviar and self.funcao_deve_enviar is not None:
+                pessoa.deve_enviar = self.funcao_deve_enviar(pessoa)
+
             pessoas.append(pessoa)
 
         return pessoas

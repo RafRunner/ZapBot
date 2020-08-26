@@ -57,7 +57,7 @@ def formatar_mensagens(mensagens, pessoa):
 
         if pessoa.infos_adicionais is not None:
             for info in pessoa.infos_adicionais:
-                mensagem_formatada = re.subn('%' + info.nome_coluna, info.substituicao_efetiva, mensagem_formatada)[0]
+                mensagem_formatada = mensagem.replace('%' + info.nome_coluna, info.substituicao_efetiva)
 
         mensagens_formatadas.append(mensagem_formatada)
 

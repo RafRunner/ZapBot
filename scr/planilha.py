@@ -19,8 +19,7 @@ def normaliza_tamanho_colunas(nomes, numeros, enviados):
 
 class Planilha:
 
-    def __init__(self, nome_planilha, numero_sheet, linha_inicial, linha_final, coluna_nomes, coluna_numeros,
-                 coluna_enviado, infos_adicionais=None, funcao_deve_enviar=None):
+    def __init__(self, nome_planilha, numero_sheet, linha_inicial, linha_final, coluna_nomes, coluna_numeros, coluna_enviado, infos_adicionais=None, funcao_deve_enviar=None):
 
         scope = ['https://www.googleapis.com/auth/drive']
         creds = ServiceAccountCredentials.from_json_keyfile_name("credenciais.json", scope)
@@ -89,8 +88,7 @@ class Planilha:
 
             deve_enviar = not enviados_booleanos[i]
 
-            pessoa = Pessoa(self.linha_inicial + i + 1, nomes[i], numeros_tratados[i], deve_enviar, invalidos[i],
-                            infos_adicionais_especificas)
+            pessoa = Pessoa(self.linha_inicial + i + 1, nomes[i], numeros_tratados[i], deve_enviar, invalidos[i], infos_adicionais_especificas)
 
             if deve_enviar and self.funcao_deve_enviar is not None:
                 pessoa.deve_enviar = self.funcao_deve_enviar(pessoa)
@@ -100,6 +98,4 @@ class Planilha:
         return pessoas
 
     def marca_como_enviado(self, pessoa):
-        linha = pessoa.linha
-        self.sheet.update_cell(linha, self.coluna_enviado, 'True')
-
+        self.sheet.update_cell(pessoa.linha, self.coluna_enviado, 'True')

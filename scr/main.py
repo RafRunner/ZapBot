@@ -11,6 +11,7 @@ coluna_numero = 'B'
 coluna_check = 'E'
 
 infos_adicionais = [InformacaoAdicionalASerObtida('D', 'CaminhoArquivo', lambda info: info.valor)]
+infos_adicionais = [InformacaoAdicionalASerObtida('D', 'CaminhoArquivo', lambda info: info.valor)]
 
 
 def funcao_deve_enviar(pessoa):

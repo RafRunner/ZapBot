@@ -53,7 +53,8 @@ def formatar_mensagens(mensagens, pessoa):
     mensagens_formatadas = []
 
     for mensagem in mensagens:
-        mensagem_formatada = re.subn(r'%nome', pessoa.primeiro_nome, mensagem)[0]
+        mensagem_formatada = mensagem.replace('%nome', pessoa.nome)
+        mensagem_formatada = mensagem_formatada.replace('%primeiro_nome', pessoa.primeiro_nome)
 
         if pessoa.infos_adicionais is not None:
             for info in pessoa.infos_adicionais:

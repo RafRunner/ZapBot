@@ -22,8 +22,7 @@ def enviar_mensagens_com_informacoes_planilha(planilha, mensagens, nome_arquivo_
     resultado = open(arquivo_resultado + '.txt', 'a')
 
     try:
-        resultado.write(
-            '\n\n///////////////////////////////////////////Inicio de uma nova execução de envio!!//////////////////////////////////////////////////////\n\n')
+        resultado.write('\n\n///////////////////////////////////////////Inicio de uma nova execução de envio!!//////////////////////////////////////////////////////\n\n')
 
         resultado.write('mensagens enviadas:\n')
 

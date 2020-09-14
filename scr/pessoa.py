@@ -11,7 +11,7 @@ class Pessoa:
         self.primeiro_nome = nome.split()[0]
 
     def get_informacao_adicional(self, nome_informacao):
-        if len(self.infos_adicionais) > 0:
+        if self.infos_adicionais is not None and len(self.infos_adicionais) > 0:
             return self.infos_adicionais[0].encontra_informacao_por_nome(nome_informacao)
 
         return None

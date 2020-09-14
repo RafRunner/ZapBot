@@ -41,8 +41,7 @@ class ZapBot:
     def _abrir_conersa_numero(self, numero):
         self._driver.get(self._base_url + numero)
         try:
-            self._get_element_by_xpath(
-                "//*[contains(text(), 'O número de telefone compartilhado através de url é inválido.')]")
+            self._get_element_by_xpath("//*[contains(text(), 'O número de telefone compartilhado através de url é inválido.')]")
             raise NumeroNaoEncontrado()
         except TimeoutException:
             pass
@@ -69,8 +68,7 @@ class ZapBot:
             pyautogui.write(mensagem)
             pyautogui.press('enter', 1, 1)
 
-            self._get_element_by_xpath(
-                '//*[@id="app"]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/span/div/div').click()
+            self._get_element_by_xpath('//*[@id="app"]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/span/div/div').click()
 
         else:
             text_box_mensagem.send_keys(mensagem + Keys.ENTER)

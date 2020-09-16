@@ -1,13 +1,17 @@
+from typing import *
 from bot import ZapBot
 from bot import NumeroNaoEncontrado
 from formatador import formatar_mensagens
+from pessoa import Pessoa
+from planilha import Planilha
+
 import time
 import os
 import errno
 
 
-def enviar_mensagens_com_informacoes_planilha(planilha, mensagens, nome_arquivo_resultado):
-    pasta_resultados = 'resultados'
+def enviar_mensagens_com_informacoes_planilha(planilha: Planilha, mensagens: List[str], nome_arquivo_resultado: str):
+    pasta_resultados: str = 'resultados'
     arquivo_resultado = os.path.join(pasta_resultados, nome_arquivo_resultado)
 
     try:
@@ -16,9 +20,9 @@ def enviar_mensagens_com_informacoes_planilha(planilha, mensagens, nome_arquivo_
         if e.errno != errno.EEXIST:
             raise e
 
-    pessoas = planilha.get_pessoas()
+    pessoas: List[Pessoa] = planilha.get_pessoas()
 
-    zap_bot = ZapBot.instance()
+    zap_bot: ZapBot = ZapBot.instance()
     resultado = open(arquivo_resultado + '.txt', 'a')
 
     try:
@@ -43,7 +47,7 @@ def enviar_mensagens_com_informacoes_planilha(planilha, mensagens, nome_arquivo_
                 continue
 
             try:
-                mensagens_formatadas = formatar_mensagens(mensagens, pessoa)
+                mensagens_formatadas: List[str] = formatar_mensagens(mensagens, pessoa)
                 zap_bot.enviar_mensagens(pessoa.numero, mensagens_formatadas)
                 planilha.marca_como_enviado(pessoa)
                 resultado.write(str(pessoa))
@@ -52,8 +56,7 @@ def enviar_mensagens_com_informacoes_planilha(planilha, mensagens, nome_arquivo_
 
             except NumeroNaoEncontrado:
                 resultado.write(str(pessoa))
-                resultado.write(
-                    'FALHA! Mensagens não enviadas para a pessoa acima porque o número não foi encontrado\n\n')
+                resultado.write('FALHA! Mensagens não enviadas para a pessoa acima porque o número não foi encontrado\n\n')
 
     except Exception as err:
         resultado.write('\nERRO CRÍTICO! A execução teve que ser interrompida por uma exception:' + str(err))

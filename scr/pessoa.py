@@ -1,18 +1,23 @@
-class Pessoa:
+from typing import *
+from info_adicional import InformacaoAdicionalEspecifica
 
-    def __init__(self, linha, nome, numero, deve_enviar, invalido, infos_adicionais):
-        self.linha = linha
-        self.nome = nome
-        self.numero = numero
-        self.deve_enviar = deve_enviar
-        self.invalido = invalido
-        self.infos_adicionais = infos_adicionais
 
-        self.primeiro_nome = nome.split()[0]
+class Pessoa(object):
 
-    def get_informacao_adicional(self, nome_informacao):
-        if self.infos_adicionais is not None and len(self.infos_adicionais) > 0:
-            return self.infos_adicionais[0].encontra_informacao_por_nome(nome_informacao)
+    def __init__(self, linha: int, nome: str, numero: str, deve_enviar: bool, invalido: bool, infos_adicionais: List[InformacaoAdicionalEspecifica]):
+        self.linha: int = linha
+        self.nome: str = nome
+        self.numero: str = numero
+        self.deve_enviar: bool = deve_enviar
+        self.invalido: bool = invalido
+        self.infos_adicionais: List[InformacaoAdicionalEspecifica] = infos_adicionais
+
+        self.primeiro_nome: str = nome.split()[0]
+
+    def get_informacao_adicional(self, nome_informacao) -> Optional[InformacaoAdicionalEspecifica]:
+        for info_especifica in self.infos_adicionais:
+            if info_especifica.nome_info == nome_informacao:
+                return info_especifica
 
         return None
 

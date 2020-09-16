@@ -1,3 +1,6 @@
+from typing import *
+from pessoa import Pessoa
+
 import re
 
 
@@ -5,8 +8,8 @@ class NumeroInvalido(Exception):
     pass
 
 
-def formatar_numero_goiania_brasil(numero):
-    numero_formatado = re.subn(r'[- ()+]', '', numero)[0]
+def formatar_numero_goiania_brasil(numero: str) -> str:
+    numero_formatado: str = re.subn(r'[- ()+]', '', numero)[0]
 
     if numero_formatado == '':
         raise NumeroInvalido()
@@ -34,11 +37,11 @@ def formatar_numero_goiania_brasil(numero):
     return numero_formatado
 
 
-def parse_verdadeiro_falso(valor):
+def parse_verdadeiro_falso(valor: Any) -> bool:
     if isinstance(valor, (bool, int)):
         return bool(valor)
 
-    valor_tratado = valor.lower().strip()
+    valor_tratado: str = str(valor).lower().strip()
 
     if valor_tratado == 'sim' or valor_tratado == 's' or valor_tratado == 'verdadeiro' or valor_tratado == 'v' or valor_tratado == 'true' or valor_tratado == 't' or valor_tratado == '1':
         return True
@@ -49,8 +52,8 @@ def parse_verdadeiro_falso(valor):
     return bool(valor_tratado)
 
 
-def formatar_mensagens(mensagens, pessoa):
-    mensagens_formatadas = []
+def formatar_mensagens(mensagens: List[str], pessoa: Pessoa) -> List[str]:
+    mensagens_formatadas: List[str] = []
 
     for mensagem in mensagens:
         mensagem_formatada = mensagem.replace('%nome', pessoa.nome)
@@ -58,7 +61,7 @@ def formatar_mensagens(mensagens, pessoa):
 
         if pessoa.infos_adicionais is not None:
             for info in pessoa.infos_adicionais:
-                mensagem_formatada = mensagem.replace('%' + info.nome_coluna, info.substituicao_efetiva)
+                mensagem_formatada = mensagem.replace('%' + info.nome_info, info.get_substituicao(pessoa))
 
         mensagens_formatadas.append(mensagem_formatada)
 
